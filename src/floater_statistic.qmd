@@ -1,0 +1,731 @@
+---
+title: "Statistic for Master Thesis: Floater"
+format: html
+editor: visual
+---
+
+```{r}
+#include packages
+library(tidyverse)
+library(lme4)
+library(emmeans)
+library(effsize)
+```
+
+```{r}
+# ball possession phases
+ball_pos_phases <- read_csv("insert_path.csv")
+
+ball_pos_phases_outer_zone <- subset(ball_pos_phases, condition %in% c("A-A", "A-Z"))
+ball_pos_phases_inner_zone <- subset(ball_pos_phases, condition %in% c("Z-A", "Z-Z"))
+ball_pos_phases$zone <- ifelse(ball_pos_phases$condition %in%  c("A-A", "A-Z"), "outer_zone", "inner_zone") 
+
+ball_pos_phases_outer_zone$cond_dummy <- ifelse(ball_pos_phases_outer_zone$condition == "A-A", 0, 1)
+ball_pos_phases_inner_zone$cond_dummy <- ifelse(ball_pos_phases_inner_zone$condition == "Z-A", 0, 1)
+ball_pos_phases$cond_dummy <- ifelse(ball_pos_phases$zone == "outer_zone", 0, 1)
+
+# outer zone
+ball_pos_phases_outer_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = ball_pos_phases_outer_zone)
+
+ball_pos_phases_outer_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = ball_pos_phases_outer_zone)
+
+anova(ball_pos_phases_outer_zone_full.mod, ball_pos_phases_outer_zone_reduced.mod)
+
+summary(ball_pos_phases_outer_zone_full.mod)
+
+coef(ball_pos_phases_outer_zone_full.mod)
+
+ball_pos_phases_outer_zone_emm <- emmeans(ball_pos_phases_outer_zone_full.mod, "cond_dummy")
+
+VarCorr(ball_pos_phases_outer_zone_full.mod)
+
+eff_size(ball_pos_phases_outer_zone_emm, sigma = 1.7321 + 0.5000, edf = 2)
+
+# inner zone
+ball_pos_phases_inner_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = ball_pos_phases_inner_zone)
+
+ball_pos_phases_inner_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = ball_pos_phases_inner_zone)
+
+anova(ball_pos_phases_inner_zone_full.mod, ball_pos_phases_inner_zone_reduced.mod)
+
+summary(ball_pos_phases_inner_zone_full.mod)
+
+coef(ball_pos_phases_inner_zone_full.mod)
+
+ball_pos_phases_inner_zone_emm <- emmeans(ball_pos_phases_inner_zone_full.mod, "cond_dummy")
+
+VarCorr(ball_pos_phases_inner_zone_full.mod)
+
+eff_size(ball_pos_phases_inner_zone_emm, sigma = 1.5811 + 2.0000, edf = 2)
+
+# zone comparison
+ball_pos_phases_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = ball_pos_phases)
+
+ball_pos_phases_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = ball_pos_phases)
+
+anova(ball_pos_phases_full.mod, ball_pos_phases_reduced.mod)
+
+summary(ball_pos_phases_full.mod)
+
+coef(ball_pos_phases_full.mod)
+
+ball_pos_phases_emm <- emmeans(ball_pos_phases_full.mod, "cond_dummy")
+
+VarCorr(ball_pos_phases_full.mod)
+
+eff_size(ball_pos_phases_emm, sigma = 1.8439 + 1.2349, edf = 4)
+```
+
+```{r}
+# duration
+duration <- read_csv("insert_path.csv")
+
+duration_outer_zone <- subset(duration, condition %in% c("A-A", "A-Z"))
+duration_inner_zone <- subset(duration, condition %in% c("Z-A", "Z-Z"))
+duration$zone <- ifelse(duration$condition %in%  c("A-A", "A-Z"), "outer_zone", "inner_zone") 
+
+duration_outer_zone$cond_dummy <- ifelse(duration_outer_zone$condition == "A-A", 0, 1)
+duration_inner_zone$cond_dummy <- ifelse(duration_inner_zone$condition == "Z-A", 0, 1)
+duration$cond_dummy <- ifelse(duration$zone == "outer_zone", 0, 1)
+
+# outer zone
+duration_outer_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = duration_outer_zone)
+
+duration_outer_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = duration_outer_zone)
+
+anova(duration_outer_zone_full.mod, duration_outer_zone_reduced.mod)
+
+summary(duration_outer_zone_full.mod)
+
+coef(duration_outer_zone_full.mod)
+
+duration_outer_zone_emm <- emmeans(duration_outer_zone_full.mod, "cond_dummy")
+
+VarCorr(duration_outer_zone_full.mod)
+
+eff_size(duration_outer_zone_emm, sigma = 3.164 + 13.922, edf = 2)
+
+# inner zone
+duration_inner_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = duration_inner_zone)
+
+duration_inner_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = duration_inner_zone)
+
+anova(duration_inner_zone_full.mod, duration_inner_zone_reduced.mod)
+
+summary(duration_inner_zone_full.mod)
+
+coef(duration_inner_zone_full.mod)
+
+duration_inner_zone_emm <- emmeans(duration_inner_zone_full.mod, "cond_dummy")
+
+VarCorr(duration_inner_zone_full.mod)
+
+eff_size(duration_inner_zone_emm, sigma = 0.000 + 15.308, edf = 2)
+
+# zone comparison
+duration_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = duration)
+
+duration_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = duration)
+
+anova(duration_full.mod, duration_reduced.mod)
+
+summary(duration_full.mod)
+
+coef(duration_full.mod)
+
+duration_emm <- emmeans(duration_full.mod, "cond_dummy")
+
+VarCorr(duration_full.mod)
+
+eff_size(duration_emm, sigma = 4.2752 + 14.1053, edf = 4)
+```
+
+```{r}
+# outcome
+outcome <- read_csv("insert_path.csv")
+
+outcome_outer_zone <- subset(outcome, condition %in% c("A-A", "A-Z"))
+outcome_inner_zone <- subset(outcome, condition %in% c("Z-A", "Z-Z"))
+outcome$zone <- ifelse(outcome$condition %in%  c("A-A", "A-Z"), "outer_zone", "inner_zone") 
+
+outcome_outer_zone$cond_dummy <- ifelse(outcome_outer_zone$condition == "A-A", 0, 1)
+outcome_inner_zone$cond_dummy <- ifelse(outcome_inner_zone$condition == "Z-A", 0, 1)
+outcome$cond_dummy <- ifelse(outcome$zone == "outer_zone", 0, 1)
+
+# outer zone
+outcome_outer_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = outcome_outer_zone)
+
+outcome_outer_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = outcome_outer_zone)
+
+anova(outcome_outer_zone_full.mod, outcome_outer_zone_reduced.mod)
+
+summary(outcome_outer_zone_full.mod)
+
+coef(outcome_outer_zone_full.mod)
+
+outcome_outer_zone_emm <- emmeans(outcome_outer_zone_full.mod, "cond_dummy")
+
+VarCorr(outcome_outer_zone_full.mod)
+
+eff_size(outcome_outer_zone_emm, sigma = 0.00000 + 0.99278, edf = 2)
+
+# inner zone
+outcome_inner_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = outcome_inner_zone)
+
+outcome_inner_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = outcome_inner_zone)
+
+anova(outcome_inner_zone_full.mod, outcome_inner_zone_reduced.mod)
+
+summary(outcome_inner_zone_full.mod)
+
+coef(outcome_inner_zone_full.mod)
+
+outcome_inner_zone_emm <- emmeans(outcome_inner_zone_full.mod, "cond_dummy")
+
+VarCorr(outcome_inner_zone_full.mod)
+
+eff_size(outcome_inner_zone_emm, sigma = 0.000 +  1.1424, edf = 2)
+
+# zone comparison
+outcome_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = outcome)
+
+outcome_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = outcome)
+
+anova(outcome_full.mod, outcome_reduced.mod)
+
+summary(outcome_full.mod)
+
+coef(outcome_full.mod)
+
+outcome_emm <- emmeans(outcome_full.mod, "cond_dummy")
+
+VarCorr(outcome_full.mod)
+
+eff_size(outcome_emm, sigma = 0.21069 + 1.07747, edf = 4)
+```
+
+```{r}
+# speed zones distance floater
+speed_zones_distance_floater <- read_csv("insert_path.csv")
+
+speed_zones_distance_floater_zone <- speed_zones_distance_floater %>% filter(grepl("total", category))
+
+speed_zones_distance_floater_zone_outer_zone <- subset(speed_zones_distance_floater_zone, condition %in% c("A-A", "A-Z"))
+speed_zones_distance_floater_zone_inner_zone <- subset(speed_zones_distance_floater_zone, condition %in% c("Z-A", "Z-Z"))
+speed_zones_distance_floater_zone$zone <- ifelse(speed_zones_distance_floater_zone$condition %in%  c("A-A", "A-Z"), "outer_zone", "inner_zone")
+
+speed_zones_distance_floater_zone_outer_zone$cond_dummy <- ifelse(speed_zones_distance_floater_zone_outer_zone$condition == "A-A", 0, 1)
+speed_zones_distance_floater_zone_inner_zone$cond_dummy <- ifelse(speed_zones_distance_floater_zone_inner_zone$condition == "Z-A", 0, 1)
+speed_zones_distance_floater_zone$cond_dummy <- ifelse(speed_zones_distance_floater_zone$zone == "outer_zone", 0, 1)
+
+# outer zone
+speed_zones_distance_floater_zone_outer_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = speed_zones_distance_floater_zone_outer_zone)
+
+speed_zones_distance_floater_zone_outer_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = speed_zones_distance_floater_zone_outer_zone)
+
+anova(speed_zones_distance_floater_zone_outer_zone_full.mod, speed_zones_distance_floater_zone_outer_zone_reduced.mod)
+
+summary(speed_zones_distance_floater_zone_outer_zone_full.mod)
+
+coef(speed_zones_distance_floater_zone_outer_zone_full.mod)
+
+speed_zones_distance_floater_zone_outer_zone_emm <- emmeans(speed_zones_distance_floater_zone_outer_zone_full.mod, "cond_dummy")
+
+VarCorr(speed_zones_distance_floater_zone_outer_zone_full.mod)
+
+eff_size(speed_zones_distance_floater_zone_outer_zone_emm, sigma = 3.1722 + 13.5952, edf = 2)
+
+# inner zone
+speed_zones_distance_floater_zone_inner_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = speed_zones_distance_floater_zone_inner_zone)
+
+speed_zones_distance_floater_zone_inner_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = speed_zones_distance_floater_zone_inner_zone)
+
+anova(speed_zones_distance_floater_zone_inner_zone_full.mod, speed_zones_distance_floater_zone_inner_zone_reduced.mod)
+
+summary(speed_zones_distance_floater_zone_inner_zone_full.mod)
+
+coef(speed_zones_distance_floater_zone_inner_zone_full.mod)
+
+speed_zones_distance_floater_zone_inner_zone_emm <- emmeans(speed_zones_distance_floater_zone_inner_zone_full.mod, "cond_dummy")
+
+VarCorr(speed_zones_distance_floater_zone_inner_zone_full.mod)
+
+eff_size(speed_zones_distance_floater_zone_inner_zone_emm, sigma = 0.00000 + 18.747, edf = 2)
+
+# zone comparison
+speed_zones_distance_floater_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = speed_zones_distance_floater_zone)
+
+speed_zones_distance_floater_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = speed_zones_distance_floater_zone)
+
+anova(speed_zones_distance_floater_zone_full.mod, speed_zones_distance_floater_zone_reduced.mod)
+
+summary(speed_zones_distance_floater_zone_full.mod)
+
+coef(speed_zones_distance_floater_zone_full.mod)
+
+speed_zones_distance_floater_zone_emm <- emmeans(speed_zones_distance_floater_zone_full.mod, "cond_dummy")
+
+VarCorr(speed_zones_distance_floater_zone_full.mod)
+
+eff_size(speed_zones_distance_floater_zone_emm, sigma = 3.2628 + 16.1297, edf = 2)
+```
+
+```{r}
+# technical floater
+technical_floater <- read_csv("insert_path.csv")
+
+technical_floater_zone <- technical_floater %>% filter(grepl("Dribbling %", category))
+
+technical_floater_zone_outer_zone <- subset(technical_floater_zone, condition %in% c("A-A", "A-Z"))
+technical_floater_zone_inner_zone <- subset(technical_floater_zone, condition %in% c("Z-A", "Z-Z"))
+technical_floater_zone$zone <- ifelse(technical_floater_zone$condition %in%  c("A-A", "A-Z"), "outer_zone", "inner_zone")
+
+technical_floater_zone_outer_zone$cond_dummy <- ifelse(technical_floater_zone_outer_zone$condition == "A-A", 0, 1)
+technical_floater_zone_inner_zone$cond_dummy <- ifelse(technical_floater_zone_inner_zone$condition == "Z-A", 0, 1)
+technical_floater_zone$cond_dummy <- ifelse(technical_floater_zone$zone == "outer_zone", 0, 1)
+
+# outer zone
+technical_floater_zone_outer_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = technical_floater_zone_outer_zone)
+
+technical_floater_zone_outer_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = technical_floater_zone_outer_zone)
+
+anova(technical_floater_zone_outer_zone_full.mod, technical_floater_zone_outer_zone_reduced.mod)
+
+summary(technical_floater_zone_outer_zone_full.mod)
+
+coef(technical_floater_zone_outer_zone_full.mod)
+
+technical_floater_zone_outer_zone_emm <- emmeans(technical_floater_zone_outer_zone_full.mod, "cond_dummy")
+
+VarCorr(technical_floater_zone_outer_zone_full.mod)
+
+eff_size(technical_floater_zone_outer_zone_emm, sigma = 0.00000 + 0.28284, edf = 2)
+
+# inner zone
+technical_floater_zone_inner_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = technical_floater_zone_inner_zone)
+
+technical_floater_zone_inner_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = technical_floater_zone_inner_zone)
+
+anova(technical_floater_zone_inner_zone_full.mod, technical_floater_zone_inner_zone_reduced.mod)
+
+summary(technical_floater_zone_inner_zone_full.mod)
+
+coef(technical_floater_zone_inner_zone_full.mod)
+
+technical_floater_zone_inner_zone_emm <- emmeans(technical_floater_zone_inner_zone_full.mod, "cond_dummy")
+
+VarCorr(technical_floater_zone_inner_zone_full.mod)
+
+eff_size(technical_floater_zone_inner_zone_emm, sigma = 2.0938e-05 + 1.6366e-01, edf = 2)
+
+# zone comparison
+technical_floater_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = technical_floater_zone)
+
+technical_floater_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = technical_floater_zone)
+
+anova(technical_floater_zone_full.mod, technical_floater_zone_reduced.mod)
+
+summary(technical_floater_zone_full.mod)
+
+coef(technical_floater_zone_full.mod)
+
+technical_floater_zone_emm <- emmeans(technical_floater_zone_full.mod, "cond_dummy")
+
+VarCorr(technical_floater_zone_full.mod)
+
+eff_size(technical_floater_zone_emm, sigma = 0.00000 + 0.24483, edf = 2)
+```
+
+```{r}
+# lpw attacker
+lpw_attacker <- read_csv("insert_path.csv")
+
+lpw_attacker <- lpw_attacker %>% group_by(condition, ball_pos_phase) %>% summarise(across(everything(), mean))
+
+lpw_attacker_outer_zone <- subset(lpw_attacker, condition %in% c("A-A", "A-Z"))
+lpw_attacker_inner_zone <- subset(lpw_attacker, condition %in% c("Z-A", "Z-Z"))
+lpw_attacker$zone <- ifelse(lpw_attacker$condition %in%  c("A-A", "A-Z"), "outer_zone", "inner_zone") 
+
+lpw_attacker_outer_zone$cond_dummy <- ifelse(lpw_attacker_outer_zone$condition == "A-A", 0, 1)
+lpw_attacker_inner_zone$cond_dummy <- ifelse(lpw_attacker_inner_zone$condition == "Z-A", 0, 1)
+lpw_attacker$cond_dummy <- ifelse(lpw_attacker$zone == "outer_zone", 0, 1)
+
+# outer zone
+lpw_attacker_outer_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = lpw_attacker_outer_zone)
+
+lpw_attacker_outer_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = lpw_attacker_outer_zone)
+
+anova(lpw_attacker_outer_zone_full.mod, lpw_attacker_outer_zone_reduced.mod)
+
+summary(lpw_attacker_outer_zone_full.mod)
+
+coef(lpw_attacker_outer_zone_full.mod)
+
+lpw_attacker_outer_zone_emm <- emmeans(lpw_attacker_outer_zone_full.mod, "cond_dummy")
+
+VarCorr(lpw_attacker_outer_zone_full.mod)
+
+eff_size(lpw_attacker_outer_zone_emm, sigma = 0.07337 + 0.21626, edf = 2)
+
+# inner zone
+lpw_attacker_inner_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = lpw_attacker_inner_zone)
+
+lpw_attacker_inner_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = lpw_attacker_inner_zone)
+
+anova(lpw_attacker_inner_zone_full.mod, lpw_attacker_inner_zone_reduced.mod)
+
+summary(lpw_attacker_inner_zone_full.mod)
+
+coef(lpw_attacker_inner_zone_full.mod)
+
+lpw_attacker_inner_zone_emm <- emmeans(lpw_attacker_inner_zone_full.mod, "cond_dummy")
+
+VarCorr(lpw_attacker_inner_zone_full.mod)
+
+eff_size(lpw_attacker_inner_zone_emm, sigma = 0.00000 + 0.34966, edf = 2)
+
+# zone comparison
+lpw_attacker_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = lpw_attacker)
+
+lpw_attacker_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = lpw_attacker)
+
+anova(lpw_attacker_full.mod, lpw_attacker_reduced.mod)
+
+summary(lpw_attacker_full.mod)
+
+coef(lpw_attacker_full.mod)
+
+lpw_attacker_emm <- emmeans(lpw_attacker_full.mod, "cond_dummy")
+
+VarCorr(lpw_attacker_full.mod)
+
+eff_size(lpw_attacker_emm, sigma = 0.08112 + 0.28878, edf = 4)
+```
+
+```{r}
+# lpw defender
+lpw_defender <- read_csv("insert_path.csv")
+
+lpw_defender <- lpw_defender %>% group_by(condition, ball_pos_phase) %>% summarise(across(everything(), mean))
+
+lpw_defender_outer_zone <- subset(lpw_defender, condition %in% c("A-A", "A-Z"))
+lpw_defender_inner_zone <- subset(lpw_defender, condition %in% c("Z-A", "Z-Z"))
+lpw_defender$zone <- ifelse(lpw_defender$condition %in%  c("A-A", "A-Z"), "outer_zone", "inner_zone") 
+
+lpw_defender_outer_zone$cond_dummy <- ifelse(lpw_defender_outer_zone$condition == "A-A", 0, 1)
+lpw_defender_inner_zone$cond_dummy <- ifelse(lpw_defender_inner_zone$condition == "Z-A", 0, 1)
+lpw_defender$cond_dummy <- ifelse(lpw_defender$zone == "outer_zone", 0, 1)
+
+# outer zone
+lpw_defender_outer_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = lpw_defender_outer_zone)
+
+lpw_defender_outer_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = lpw_defender_outer_zone)
+
+anova(lpw_defender_outer_zone_full.mod, lpw_defender_outer_zone_reduced.mod)
+
+summary(lpw_defender_outer_zone_full.mod)
+
+coef(lpw_defender_outer_zone_full.mod)
+
+lpw_defender_outer_zone_emm <- emmeans(lpw_defender_outer_zone_full.mod, "cond_dummy")
+
+VarCorr(lpw_defender_outer_zone_full.mod)
+
+eff_size(lpw_defender_outer_zone_emm, sigma = 0.30903 + 0.25619, edf = 2)
+
+# inner zone
+lpw_defender_inner_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = lpw_defender_inner_zone)
+
+lpw_defender_inner_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = lpw_defender_inner_zone)
+
+anova(lpw_defender_inner_zone_full.mod, lpw_defender_inner_zone_reduced.mod)
+
+summary(lpw_defender_inner_zone_full.mod)
+
+coef(lpw_defender_inner_zone_full.mod)
+
+lpw_defender_inner_zone_emm <- emmeans(lpw_defender_inner_zone_full.mod, "cond_dummy")
+
+VarCorr(lpw_defender_inner_zone_full.mod)
+
+eff_size(lpw_defender_inner_zone_emm, sigma = 0.00000 + 0.31542, edf = 2)
+
+# zone comparison
+lpw_defender_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = lpw_defender)
+
+lpw_defender_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = lpw_defender)
+
+anova(lpw_defender_full.mod, lpw_defender_reduced.mod)
+
+summary(lpw_defender_full.mod)
+
+coef(lpw_defender_full.mod)
+
+lpw_defender_emm <- emmeans(lpw_defender_full.mod, "cond_dummy")
+
+VarCorr(lpw_defender_full.mod)
+
+eff_size(lpw_defender_emm, sigma = 0.15551 + 0.33198, edf = 4)
+```
+
+```{r}
+# eps
+eps <- read_csv("insert_path.csv")
+  
+eps <- eps %>% group_by(condition, ball_pos_phase) %>% summarise(across(everything(), mean))
+
+eps_outer_zone <- subset(eps, condition %in% c("A-A", "A-Z"))
+eps_inner_zone <- subset(eps, condition %in% c("Z-A", "Z-Z"))
+eps$zone <- ifelse(eps$condition %in%  c("A-A", "A-Z"), "outer_zone", "inner_zone")
+
+eps_outer_zone$cond_dummy <- ifelse(eps_outer_zone$condition == "A-A", 0, 1)
+eps_inner_zone$cond_dummy <- ifelse(eps_inner_zone$condition == "Z-A", 0, 1)
+eps$cond_dummy <- ifelse(eps$zone == "outer_zone", 0, 1)
+
+# outer zone
+eps_outer_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = eps_outer_zone)
+
+eps_outer_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = eps_outer_zone)
+
+anova(eps_outer_zone_full.mod, eps_outer_zone_reduced.mod)
+
+summary(eps_outer_zone_full.mod)
+
+coef(eps_outer_zone_full.mod)
+
+eps_outer_zone_emm <- emmeans(eps_outer_zone_full.mod, "cond_dummy")
+
+VarCorr(eps_outer_zone_full.mod)
+
+eff_size(eps_outer_zone_emm, sigma = 0.0000 + 9.3317, edf = 2)
+
+# inner zone
+eps_inner_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = eps_inner_zone)
+
+eps_inner_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = eps_inner_zone)
+
+anova(eps_inner_zone_full.mod, eps_inner_zone_reduced.mod)
+
+summary(eps_inner_zone_full.mod)
+
+coef(eps_inner_zone_full.mod)
+
+eps_inner_zone_emm <- emmeans(eps_inner_zone_full.mod, "cond_dummy")
+
+VarCorr(eps_inner_zone_full.mod)
+
+eff_size(eps_inner_zone_emm, sigma = 0.0000 + 7.9656, edf = 2)
+
+# zone comparison
+eps_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = eps)
+
+eps_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = eps)
+
+anova(eps_full.mod, eps_reduced.mod)
+
+summary(eps_full.mod)
+
+coef(eps_full.mod)
+
+eps_emm <- emmeans(eps_full.mod, "cond_dummy")
+
+VarCorr(eps_full.mod)
+
+eff_size(eps_emm, sigma = 1.1890e-07 + 8.9529e+00, edf = 4)
+```
+
+```{r}
+# space control final third
+sc_final_third <- read_csv("insert_path.csv")
+
+sc_final_third <- sc_final_third %>% group_by(condition, ball_pos_phase) %>% summarise(across(everything(), mean))
+
+sc_final_third_outer_zone <- subset(sc_final_third, condition %in% c("A-A", "A-Z"))
+sc_final_third_inner_zone <- subset(sc_final_third, condition %in% c("Z-A", "Z-Z"))
+sc_final_third$zone <- ifelse(sc_final_third$condition %in%  c("A-A", "A-Z"), "outer_zone", "inner_zone")
+
+sc_final_third_outer_zone$cond_dummy <- ifelse(sc_final_third_outer_zone$condition == "A-A", 0, 1)
+sc_final_third_inner_zone$cond_dummy <- ifelse(sc_final_third_inner_zone$condition == "Z-A", 0, 1)
+sc_final_third$cond_dummy <- ifelse(sc_final_third$zone == "outer_zone", 0, 1)
+
+# outer zone
+sc_final_third_outer_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = sc_final_third_outer_zone)
+
+sc_final_third_outer_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = sc_final_third_outer_zone)
+
+anova(sc_final_third_outer_zone_full.mod, sc_final_third_outer_zone_reduced.mod)
+
+summary(sc_final_third_outer_zone_full.mod)
+
+coef(sc_final_third_outer_zone_full.mod)
+
+sc_final_third_outer_zone_emm <- emmeans(sc_final_third_outer_zone_full.mod, "cond_dummy")
+
+VarCorr(sc_final_third_outer_zone_full.mod)
+
+eff_size(sc_final_third_outer_zone_emm, sigma = 3.359 + 17.237, edf = 2)
+
+# inner zone
+sc_final_third_inner_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = sc_final_third_inner_zone)
+
+sc_final_third_inner_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = sc_final_third_inner_zone)
+
+anova(sc_final_third_inner_zone_full.mod, sc_final_third_inner_zone_reduced.mod)
+
+summary(sc_final_third_inner_zone_full.mod)
+
+coef(sc_final_third_inner_zone_full.mod)
+
+sc_final_third_inner_zone_emm <- emmeans(sc_final_third_inner_zone_full.mod, "cond_dummy")
+
+VarCorr(sc_final_third_inner_zone_full.mod)
+
+eff_size(sc_final_third_inner_zone_emm, sigma = 0.0 + 13.71, edf = 2)
+
+# zone comparison
+sc_final_third_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = sc_final_third)
+
+sc_final_third_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = sc_final_third)
+
+anova(sc_final_third_full.mod, sc_final_third_reduced.mod)
+
+summary(sc_final_third_full.mod)
+
+coef(sc_final_third_full.mod)
+
+sc_final_third_emm <- emmeans(sc_final_third_full.mod, "cond_dummy")
+
+VarCorr(sc_final_third_full.mod)
+
+eff_size(sc_final_third_emm, sigma = 3.4446 + 15.5053, edf = 4)
+```
+
+```{r}
+# space control zones
+sc_zones <- read_csv("insert_path.csv")
+
+sc_zones <- sc_zones %>% group_by(condition, ball_pos_phase) %>% summarise(across(everything(), mean))
+
+sc_zones_outer_zone <- subset(sc_zones, condition %in% c("A-A", "A-Z"))
+sc_zones_inner_zone <- subset(sc_zones, condition %in% c("Z-A", "Z-Z"))
+sc_zones$zone <- ifelse(sc_zones$condition %in%  c("A-A", "A-Z"), "outer_zone", "inner_zone")
+
+sc_zones_outer_zone$cond_dummy <- ifelse(sc_zones_outer_zone$condition == "A-A", 0, 1)
+sc_zones_inner_zone$cond_dummy <- ifelse(sc_zones_inner_zone$condition == "Z-A", 0, 1)
+sc_zones$cond_dummy <- ifelse(sc_zones$zone == "outer_zone", 0, 1)
+
+# outer zone
+sc_zones_outer_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = sc_zones_outer_zone)
+
+sc_zones_outer_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = sc_zones_outer_zone)
+
+anova(sc_zones_outer_zone_full.mod, sc_zones_outer_zone_reduced.mod)
+
+summary(sc_zones_outer_zone_full.mod)
+
+coef(sc_zones_outer_zone_full.mod)
+
+sc_zones_outer_zone_emm <- emmeans(sc_zones_outer_zone_full.mod, "cond_dummy")
+
+VarCorr(sc_zones_outer_zone_full.mod)
+
+eff_size(sc_zones_outer_zone_emm, sigma = 0.000 + 12.095, edf = 2)
+
+# inner zone
+sc_zones_inner_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = sc_zones_inner_zone)
+
+sc_zones_inner_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = sc_zones_inner_zone)
+
+anova(sc_zones_inner_zone_full.mod, sc_zones_inner_zone_reduced.mod)
+
+summary(sc_zones_inner_zone_full.mod)
+
+coef(sc_zones_inner_zone_full.mod)
+
+sc_zones_inner_zone_emm <- emmeans(sc_zones_inner_zone_full.mod, "cond_dummy")
+
+VarCorr(sc_zones_inner_zone_full.mod)
+
+eff_size(sc_zones_inner_zone_emm, sigma = 2.6214 + 10.2936, edf = 2)
+
+# zone comparison
+sc_zones_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = sc_zones)
+
+sc_zones_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = sc_zones)
+
+anova(sc_zones_full.mod, sc_zones_reduced.mod)
+
+summary(sc_zones_full.mod)
+
+coef(sc_zones_full.mod)
+
+sc_zones_emm <- emmeans(sc_zones_full.mod, "cond_dummy")
+
+VarCorr(sc_zones_full.mod)
+
+eff_size(sc_zones_emm, sigma = 0.000 + 11.685, edf = 2)
+```
+
+```{r}
+# od_max
+od_max <- read_csv("insert_path.csv")
+
+od_max_outer_zone <- subset(od_max, condition %in% c("A-A", "A-Z"))
+od_max_inner_zone <- subset(od_max, condition %in% c("Z-A", "Z-Z"))
+od_max$zone <- ifelse(od_max$condition %in%  c("A-A", "A-Z"), "outer_zone", "inner_zone")
+
+od_max_outer_zone$cond_dummy <- ifelse(od_max_outer_zone$condition == "A-A", 0, 1)
+od_max_inner_zone$cond_dummy <- ifelse(od_max_inner_zone$condition == "Z-A", 0, 1)
+od_max$cond_dummy <- ifelse(od_max$zone == "outer_zone", 0, 1)
+
+# outer zone
+od_max_outer_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = od_max_outer_zone)
+
+od_max_outer_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = od_max_outer_zone)
+
+anova(od_max_outer_zone_full.mod, od_max_outer_zone_reduced.mod)
+
+summary(od_max_outer_zone_full.mod)
+
+coef(od_max_outer_zone_full.mod)
+
+od_max_outer_zone_emm <- emmeans(od_max_outer_zone_full.mod, "cond_dummy")
+
+VarCorr(od_max_outer_zone_full.mod)
+
+eff_size(od_max_outer_zone_emm, sigma = 0.0000 + 2.1347, edf = 2)
+
+# inner zone
+od_max_inner_zone_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = od_max_inner_zone)
+
+od_max_inner_zone_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = od_max_inner_zone)
+
+anova(od_max_inner_zone_full.mod, od_max_inner_zone_reduced.mod)
+
+summary(od_max_inner_zone_full.mod)
+
+coef(od_max_inner_zone_full.mod)
+
+od_max_inner_zone_emm <- emmeans(od_max_inner_zone_full.mod, "cond_dummy")
+
+VarCorr(od_max_inner_zone_full.mod)
+
+eff_size(od_max_inner_zone_emm, sigma = 0.0000 + 2.0856, edf = 2)
+
+# zone comparison
+od_max_full.mod <- lmer(value ~ 1 + cond_dummy + (1|ball_pos_phase), data = od_max)
+
+od_max_reduced.mod <- lmer(value ~ 1 + (1|ball_pos_phase), data = od_max)
+
+anova(od_max_full.mod, od_max_reduced.mod)
+
+summary(od_max_full.mod)
+
+coef(od_max_full.mod)
+
+od_max_emm <- emmeans(od_max_full.mod, "cond_dummy")
+
+VarCorr(od_max_full.mod)
+
+eff_size(od_max_emm, sigma = 0.0000 + 2.0982, edf = 2)
+```
